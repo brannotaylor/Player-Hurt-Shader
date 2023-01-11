@@ -1,0 +1,70 @@
+[gd_scene load_steps=10 format=3 uid="uid://nch04whtd7xk"]
+
+[ext_resource type="Shader" path="res://playerHurt.gdshader" id="1_m7fgv"]
+[ext_resource type="Script" path="res://control.gd" id="1_tdqsy"]
+
+[sub_resource type="Gradient" id="Gradient_r1uke"]
+offsets = PackedFloat32Array(0, 0.772277)
+colors = PackedColorArray(0.592157, 0, 0, 1, 1, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_1wcdq"]
+gradient = SubResource("Gradient_r1uke")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_pfx1q"]
+noise_type = 0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_oqbl3"]
+width = 1920
+height = 1080
+seamless = true
+noise = SubResource("FastNoiseLite_pfx1q")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gcipo"]
+shader = ExtResource("1_m7fgv")
+shader_parameter/colorTexture = SubResource("GradientTexture1D_1wcdq")
+shader_parameter/intensity = 0.0
+shader_parameter/scrollDirection = Vector2(-0.05, -0.05)
+shader_parameter/textureHoles = SubResource("NoiseTexture2D_oqbl3")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_g504n"]
+noise_type = 0
+seed = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_y618m"]
+width = 1920
+height = 1080
+seamless = true
+noise = SubResource("FastNoiseLite_g504n")
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tdqsy")
+
+[node name="PlayerHurt" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_gcipo")
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("NoiseTexture2D_y618m")
+stretch_mode = 1
+
+[node name="Timer" type="Timer" parent="PlayerHurt"]
+wait_time = 3.0
+one_shot = true
+
+[node name="OUCH" type="Button" parent="."]
+layout_mode = 0
+offset_left = 838.0
+offset_top = 410.0
+offset_right = 1055.0
+offset_bottom = 606.0
+theme_override_font_sizes/font_size = 32
+text = "OUCH"
+
+[connection signal="timeout" from="PlayerHurt/Timer" to="." method="_on_timer_timeout"]
+[connection signal="pressed" from="OUCH" to="." method="_on_ouch_pressed"]
